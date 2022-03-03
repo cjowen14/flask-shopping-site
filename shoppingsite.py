@@ -6,7 +6,7 @@ put melons in a shopping cart.
 Authors: Joel Burton, Christian Fernandez, Meggie Mahnken, Katie Byers.
 """
 
-from flask import Flask, render_template, redirect, flash
+from flask import Flask, render_template, redirect, flash, session
 import jinja2
 
 import melons
@@ -37,6 +37,11 @@ def index():
 @app.route("/melons")
 def list_melons():
     """Return page showing all the melons ubermelon has to offer"""
+
+    if 'username' in session:
+        print(f"Logged in as {session['username']}")
+    else:
+        print("You are not logged in")
 
     melon_list = melons.get_all()
     return render_template("all_melons.html",
@@ -78,7 +83,24 @@ def show_shopping_cart():
     # Make sure your function can also handle the case wherein no cart has
     # been added to the session
 
-    return render_template("cart.html")
+
+    if "cart" in session:
+        melon_obj = []
+        total_cost = 0
+        for melon in session["cart"]:
+            mel = melons.get_by_id(melon)
+            num_melons = int(session["cart"][melon])
+            melon_price = int(mel.price)
+            melon_total = num_melons * melon_price
+            mel.quantity = num_melons
+            mel.total = melon_total
+            melon_obj.append(mel)
+            total_cost += melon_total
+        
+
+        return render_template("cart.html", total=total_cost, melons=melon_obj)
+    
+    return render_template("cart.html", total=None, melons=None)
 
 
 @app.route("/add_to_cart/<melon_id>")
@@ -100,7 +122,20 @@ def add_to_cart(melon_id):
     # - flash a success message
     # - redirect the user to the cart page
 
-    return "Oops! This needs to be implemented!"
+    
+    if 'cart' in session:
+        if melon_id in session["cart"]:
+            session["cart"][melon_id] += 1
+        else:
+            session["cart"][melon_id] = 1
+    else:
+        session["cart"] = {}
+        session["cart"][melon_id] = 1
+
+    flash("Item has been added to your cart!")
+    
+    return show_shopping_cart()
+    # return render_template("cart.html", cart=session["cart"])
 
 
 @app.route("/login", methods=["GET"])
