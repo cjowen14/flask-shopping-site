@@ -20,14 +20,14 @@
                 <tr>
                     <th>{{ melon.common_name}}</th>
                     <th>{{ melon.quantity }}</th>
-                    <th>{{ melon.price }}</th>
-                    <th>{{ melon.total }}</th>
+                    <th>${{ melon.price }}0</th>
+                    <th>${{ melon.total }}</th>
                 </tr>
                 {% endfor %}
                 </tbody>
             </table>
 
-        <h3>Total: $27.00</h3>
+        <h3>${{ total }}.00</h3>
 
             <a href="/checkout" class="btn btn-large btn-primary">Check Out</a>
     {% endif %}
