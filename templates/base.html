@@ -24,7 +24,11 @@
                         My Melon Cart
                     </a>
                 </li>
-                <li><a href="{{ url_for('process_login') }}">Log In</a></li>
+                {% if session['email'] %}
+                    <li><a href="{{ url_for('process_logout') }}">Log Out</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('process_login') }}">Log In</a></li>
+                {% endif %}
             </ul>
         </div>
 

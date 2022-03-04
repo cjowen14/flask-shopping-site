@@ -100,3 +100,4 @@ def get_by_id(melon_id):
 # Format is {id: Melon object, ... }
 
 melon_types = read_melon_types_from_file("melons.txt")
+

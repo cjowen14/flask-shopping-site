@@ -6,10 +6,11 @@ put melons in a shopping cart.
 Authors: Joel Burton, Christian Fernandez, Meggie Mahnken, Katie Byers.
 """
 
-from flask import Flask, render_template, redirect, flash, session
+from flask import Flask, render_template, redirect, flash, session, request, url_for
 import jinja2
 
 import melons
+import customers
 
 app = Flask(__name__)
 
@@ -153,21 +154,27 @@ def process_login():
     dictionary, look up the user, and store them in the session.
     """
 
-    # TODO: Need to implement this!
+    user_email = request.form['email']
+    user_password = hash(request.form['password'])
+    print(user_password)
+    try:
+        if hash(customers.get_by_email(user_email).password) == user_password:
+            session['email'] = user_email
+            flash ("You are logged in!")
+            return redirect(url_for('list_melons'))
+        else:
+            flash ("Incorrect Password")
+            return redirect(url_for('show_login'))
+    except KeyError:
+        flash("Email doesn't exist")
+        return redirect(url_for('show_login'))
 
-    # The logic here should be something like:
-    #
-    # - get user-provided name and password from request.form
-    # - use customers.get_by_email() to retrieve corresponding Customer
-    #   object (if any)
-    # - if a Customer with that email was found, check the provided password
-    #   against the stored one
-    # - if they match, store the user's email in the session, flash a success
-    #   message and redirect the user to the "/melons" route
-    # - if they don't, flash a failure message and redirect back to "/login"
-    # - do the same if a Customer with that email doesn't exist
+@app.route('/logout')
+def process_logout():
+    session['email'] = ""
+    flash("You have been logged out!")
+    return redirect(url_for('list_melons'))
 
-    return "Oops! This needs to be implemented"
 
 
 @app.route("/checkout")
